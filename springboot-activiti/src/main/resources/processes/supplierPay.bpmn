@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test" id="m1489990258652" name="">
+  <process id="supplier_payment" name="供应商付款" isExecutable="true" isClosed="false" processType="None">
+    <startEvent id="start"  name="供应商申请付款">
+      <extensionElements>
+        <activiti:executionListener event="start" delegateExpression="${supplierProcessListener}"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="finance" name="财务审批" activiti:assignee="${financer}">
+      <extensionElements>
+        <activiti:taskListener event="all" delegateExpression="${supplierTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="manage" name="总经理审批" activiti:assignee="${manager}">
+      <extensionElements>
+        <activiti:taskListener event="all" delegateExpression="${supplierTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="end" name="流程结束">
+      <extensionElements>
+        <activiti:executionListener event="end" delegateExpression="${supplierProcessListener}"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="_6" name="财务审批意见"></exclusiveGateway>
+    <sequenceFlow id="_7" sourceRef="start" targetRef="finance"></sequenceFlow>
+    <sequenceFlow id="_8" sourceRef="finance" targetRef="_6"></sequenceFlow>
+    <sequenceFlow id="_9" name="同意" sourceRef="_6" targetRef="manage">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${fnAgreed}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="re_submit" name="供应商重新申请" activiti:assignee="${master}">
+      <extensionElements>
+        <activiti:taskListener event="all" delegateExpression="${supplierTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="_11" name="不同意" sourceRef="_6" targetRef="re_submit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!fnAgreed}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="_12" name="总经理审批意见"></exclusiveGateway>
+    <sequenceFlow id="_13" sourceRef="manage" targetRef="_12"></sequenceFlow>
+    <sequenceFlow id="_14" name="同意" sourceRef="_12" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${mnAgreed}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_15" name="不同意" sourceRef="_12" targetRef="re_submit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!mnAgreed}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="_16" name="是否重新申请"></exclusiveGateway>
+    <sequenceFlow id="_17" sourceRef="re_submit" targetRef="_16"></sequenceFlow>
+    <sequenceFlow id="_18" name="申请" sourceRef="_16" targetRef="finance">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reSubmited}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_19" name="不申请" sourceRef="_16" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!reSubmited}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_supplier_payment">
+    <bpmndi:BPMNPlane bpmnElement="supplier_payment" id="BPMNPlane_supplier_payment">
+      <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+        <omgdc:Bounds height="35.0" width="35.0" x="0.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="finance" id="BPMNShape_finance">
+        <omgdc:Bounds height="60.0" width="100.0" x="80.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="manage" id="BPMNShape_manage">
+        <omgdc:Bounds height="60.0" width="100.0" x="439.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="35.0" width="35.0" x="790.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_6" id="BPMNShape__6">
+        <omgdc:Bounds height="40.0" width="40.0" x="300.0" y="117.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="re_submit" id="BPMNShape_re_submit">
+        <omgdc:Bounds height="60.0" width="100.0" x="271.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_12" id="BPMNShape__12">
+        <omgdc:Bounds height="40.0" width="40.0" x="639.0" y="117.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_16" id="BPMNShape__16">
+        <omgdc:Bounds height="40.0" width="40.0" x="300.0" y="364.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="BPMNEdge__7">
+        <omgdi:waypoint x="35.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="138.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_8" id="BPMNEdge__8">
+        <omgdi:waypoint x="180.0" y="138.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="BPMNEdge__9">
+        <omgdi:waypoint x="340.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="439.0" y="138.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="369.0" y="120.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_11" id="BPMNEdge__11">
+        <omgdi:waypoint x="320.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="321.0" y="240.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="36.0" x="310.0" y="185.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_13" id="BPMNEdge__13">
+        <omgdi:waypoint x="539.0" y="138.0"></omgdi:waypoint>
+        <omgdi:waypoint x="639.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_14" id="BPMNEdge__14">
+        <omgdi:waypoint x="679.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="790.0" y="137.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="709.0" y="120.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_15" id="BPMNEdge__15">
+        <omgdi:waypoint x="659.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="321.0" y="240.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="36.0" x="511.0" y="198.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_17" id="BPMNEdge__17">
+        <omgdi:waypoint x="321.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="320.0" y="364.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_18" id="BPMNEdge__18">
+        <omgdi:waypoint x="300.0" y="384.0"></omgdi:waypoint>
+        <omgdi:waypoint x="130.0" y="384.0"></omgdi:waypoint>
+        <omgdi:waypoint x="130.0" y="168.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="202.0" y="364.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_19" id="BPMNEdge__19">
+        <omgdi:waypoint x="340.0" y="384.0"></omgdi:waypoint>
+        <omgdi:waypoint x="336.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="336.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="793.0" y="148.0"></omgdi:waypoint>
+        <omgdi:waypoint x="796.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="825.0" y="137.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="538.0" y="274.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
