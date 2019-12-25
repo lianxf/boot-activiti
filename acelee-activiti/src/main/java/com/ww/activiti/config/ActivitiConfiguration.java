@@ -9,16 +9,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.util.UUID;
 
 /**
- * Created by liuruijie on 2017/2/20.
- * activiti工作流配置
+ * @className ActivitiConfiguration
+ * @description activiti工作流配置
+ * @author beyond09.hik
+ * @date 9:37 2019/12/25
+ * @version 1.0
  */
 @Configuration
-public class Cfg_Activiti {
+public class ActivitiConfiguration {
 
-    //流程配置，与spring整合采用SpringProcessEngineConfiguration这个实现
+    /**
+     * 流程配置，与spring整合采用SpringProcessEngineConfiguration这个实现
+     * @author beyond09.hik
+     * @date 9:35 2019/12/25
+     * @param dataSource {@link DataSource}
+     * @param transactionManager {@link PlatformTransactionManager}
+     * @return org.activiti.engine.ProcessEngineConfiguration
+     */
     @Bean
     public ProcessEngineConfiguration processEngineConfiguration(DataSource dataSource, PlatformTransactionManager transactionManager){
         SpringProcessEngineConfiguration processEngineConfiguration = new SpringProcessEngineConfiguration();
@@ -36,7 +45,13 @@ public class Cfg_Activiti {
         return processEngineConfiguration;
     }
 
-    //流程引擎，与spring整合使用factoryBean
+    /**
+     * 流程引擎，与spring整合使用factoryBean
+     * @author beyond09.hik
+     * @date 9:37 2019/12/25
+     * @param processEngineConfiguration {@link ProcessEngineConfiguration}
+     * @return org.activiti.spring.ProcessEngineFactoryBean
+     */
     @Bean
     public ProcessEngineFactoryBean processEngine(ProcessEngineConfiguration processEngineConfiguration){
         ProcessEngineFactoryBean processEngineFactoryBean = new ProcessEngineFactoryBean();
@@ -44,7 +59,6 @@ public class Cfg_Activiti {
         return processEngineFactoryBean;
     }
 
-    //八大接口
     @Bean
     public RepositoryService repositoryService(ProcessEngine processEngine){
         return processEngine.getRepositoryService();
@@ -85,5 +99,4 @@ public class Cfg_Activiti {
         return processEngine.getDynamicBpmnService();
     }
 
-    //八大接口 end
 }

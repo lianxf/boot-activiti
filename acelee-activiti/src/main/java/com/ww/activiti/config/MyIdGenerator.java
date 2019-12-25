@@ -5,13 +5,16 @@ import org.activiti.engine.impl.cfg.IdGenerator;
 import java.util.UUID;
 
 /**
- * @Auther: Ace Lee
- * @Date: 2019/3/11 16:05
+ * @className MyIdGenerator
+ * @description Id 生成器
+ * @author beyond09.hik
+ * @date 9:40 2019/12/25
+ * @version 1.0
  */
 public class MyIdGenerator  implements IdGenerator {
+
     @Override
     public String getNextId() {
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        return uuid;
+       return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

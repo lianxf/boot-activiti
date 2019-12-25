@@ -4,10 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * 打开activiti编辑器
- *
- * @auther: Ace Lee
- * @date: 2019/3/7 20:15
+ * @className PageController
+ * @description 打开activiti编辑器
+ * @author beyond09.hik
+ * @date 9:45 2019/12/25
+ * @version 1.0
  */
 @Controller
 public class PageController {

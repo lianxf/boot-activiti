@@ -1,5 +1,7 @@
 package com.ww.activiti.controller;
 
+import com.ww.activiti.enumeration.FileExtensionEnum;
+import com.ww.activiti.enumeration.ProcessEventEnum;
 import com.ww.common.Result;
 import com.ww.service.ProcessInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +22,11 @@ import java.io.OutputStream;
 import java.util.*;
 
 /**
- * 流程管理
- *
- * @Auther: Ace Lee
- * @Date: 2019/3/7 15:17
+ * @className ProcessController
+ * @description 流程管理
+ * @author beyond09.hik
+ * @date 9:45 2019/12/25
+ * @version 1.0
  */
 @Slf4j
 @RestController
@@ -41,9 +44,11 @@ public class ProcessController {
 
     /**
      * 查看流程图
-     *
-     * @auther: Ace Lee
-     * @date: 2019/3/5 15:24
+     * @author beyond09.hik
+     * @date 9:45 2019/12/25
+     * @param did did
+     * @param ext ext
+     * @param httpServletResponse httpServletResponse
      */
     @GetMapping("show")
     public void show(@RequestParam("did")String did, @RequestParam("ext")String ext, HttpServletResponse httpServletResponse) throws IOException {
@@ -52,43 +57,41 @@ public class ProcessController {
         }
         InputStream in = null;
         ProcessDefinition processDefinition=repositoryService.createProcessDefinitionQuery().deploymentId(did).singleResult();
-        if (".png".equalsIgnoreCase(ext)){
+        if (FileExtensionEnum.PNG.getExt().equalsIgnoreCase(ext)){
             in = repositoryService.getProcessDiagram(processDefinition.getId());
-        }else if (".bpmn".equalsIgnoreCase(ext)){
+        }else if (FileExtensionEnum.BPMN.getExt().equalsIgnoreCase(ext)){
             in = repositoryService.getResourceAsStream(did, processDefinition.getResourceName());
         }
-        OutputStream out = null;
-        byte[] buf = new byte[1024];
-        int legth = 0;
-        try {
-            out = httpServletResponse.getOutputStream();
-            while ((legth = in.read(buf)) != -1) {
-                out.write(buf, 0, legth);
-            }
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.close();
+        if (Objects.nonNull(in)){
+            OutputStream out = null;
+            byte[] buf = new byte[1024];
+            int length = 0;
+            try {
+                out = httpServletResponse.getOutputStream();
+                while ((length = in.read(buf)) != -1) {
+                    out.write(buf, 0, length);
+                }
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
             }
         }
     }
 
     /**
      * 启动一个流程
-     *
      * 参数：
-     *      key:  流程定义KEY
-     *
+     * @param  key:  流程定义KEY
+     * @param variables
      *      bussId：  业务对象序号
      *      bussName：业务对象名称
      *      bussType：业务对象类型
      *      startUserId: 发起人id
      *      startUnitId: 发起人单位id
-     *
-     * @auther: Ace Lee
-     * @date: 2019/3/5 15:24
+     * @author beyond09.hik
+     * @date 9:46 2019/12/25
+     * @return com.ww.common.Result<java.lang.String>
      */
     @PostMapping("run/{key}")
     public Result<String> run(@PathVariable String key, @RequestBody Map<String, Object> variables) {
@@ -98,11 +101,10 @@ public class ProcessController {
     }
 
     /**
-     *
      * 获取所有流程
-     *
-     * @auther: Ace Lee
-     * @date: 2019/3/7 16:27
+     * @author beyond09.hik
+     * @date 9:48 2019/12/25
+     * @return com.ww.common.Result<java.util.List<java.util.Map<java.lang.String,java.lang.Object>>>
      */
     @GetMapping("")
     public Result<List<Map<String,Object>>> list() {
@@ -112,11 +114,11 @@ public class ProcessController {
 
 
     /**
-     *
      * 获取流程节点
-     *
-     * @auther: Ace Lee
-     * @date: 2019/3/7 16:27
+     * @author beyond09.hik
+     * @date 9:49 2019/12/25
+     * @param proDefId 流程节点ID
+     * @return com.ww.common.Result<java.util.List<java.util.Map<java.lang.String,java.lang.Object>>>
      */
     @GetMapping("/{proDefId}/elements")
     public Result<List<Map<String,Object>>> listActivities(@PathVariable String proDefId) {
@@ -125,9 +127,9 @@ public class ProcessController {
         if(model != null) {
             Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements();
             for(FlowElement e : flowElements) {
-                log.info("flowelement id:" + e.getId() + "  name:" + e.getName() + "   class:" + e.getClass().toString());
-                if (e.getClass().toString().equalsIgnoreCase("class org.activiti.bpmn.model.StartEvent") ||
-                        e.getClass().toString().equalsIgnoreCase("class org.activiti.bpmn.model.UserTask")){
+                log.info("flow element id:" + e.getId() + "  name:" + e.getName() + "   class:" + e.getClass().toString());
+                if (ProcessEventEnum.START.getClassName().equalsIgnoreCase(e.getClass().toString()) ||
+                        ProcessEventEnum.USER_TASK.getClassName().equalsIgnoreCase(e.getClass().toString())){
                     Map<String,Object> element = new HashMap<>();
                     element.put(e.getId(),e.getName());
                     list.add(element);

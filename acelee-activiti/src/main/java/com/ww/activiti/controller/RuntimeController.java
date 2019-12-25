@@ -1,5 +1,7 @@
 package com.ww.activiti.controller;
 
+import com.ww.activiti.enumeration.DealTypeEnum;
+import com.ww.activiti.enumeration.TaskVariableEnum;
 import com.ww.service.RuntimeInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
@@ -7,16 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * 运行接口
- *
- * @Auther: Ace Lee
- * @Date: 2019/3/7 11:43
+ * @className RuntimeController
+ * @description 运行接口
+ * @author beyond09.hik
+ * @date 10:21 2019/12/25
+ * @version 1.0
  */
 @Slf4j
 @RestController
@@ -42,31 +42,33 @@ public class RuntimeController {
      *      dealUnitId: 操作人单位id
      *
      * 注意顺序，先给值，后完成。
-     *
-     * @param taskId
-     * @return
+     * @author beyond09.hik
+     * @date 10:10 2019/12/25
+     * @param taskId 任务ID
+     * @param params Map<String, Object> params
+     * @return java.lang.Object
      */
     @PostMapping(value = "tasks/do/{taskId}")
     public Object tasks(@PathVariable String taskId, @RequestBody Map<String, Object> params ) {
         boolean taskDo = true;
         if (null==params || params.isEmpty()){
             taskService.complete(taskId);
-            return taskDo;
+            return true;
         }
         //驳回
-        String dealType = (String) params.get("dealType");
-        String dealReason = (String) params.get("dealReason");
-        if ("1".equals(dealType)){
+        String dealType = (String) params.get(TaskVariableEnum.DEAL_TYPE.getKey());
+        String dealReason = (String) params.get(TaskVariableEnum.DEAL_REASON.getKey());
+        if (Objects.equals(DealTypeEnum.REJECT.getValue(), dealType)){
             //获取驳回节点定义key
             try {
-                String rejectElemKey = (String) params.get("rejectElemKey");
-                if ("S00000".equals(rejectElemKey)){
+                String rejectElemKey = (String) params.get(TaskVariableEnum.REJECT_ELEM_KEY.getKey());
+                if (Objects.equals(DealTypeEnum.REJECT.getElementKey(), rejectElemKey)){
                     completeTasks(taskId, params);
                 }else {
-                    taskService.setVariableLocal(taskId,"dealUserId",params.get("dealUserId"));
-                    taskService.setVariableLocal(taskId,"dealUnitId",params.get("dealUnitId"));
-                    taskService.setVariable(taskId,"dealType",dealType);
-                    taskService.setVariable(taskId,"dealReason",dealReason);
+                    taskService.setVariableLocal(taskId,TaskVariableEnum.DEAL_USER_ID.getKey(),params.get(TaskVariableEnum.DEAL_USER_ID.getKey()));
+                    taskService.setVariableLocal(taskId,TaskVariableEnum.DEAL_UNIT_ID.getKey(),params.get(TaskVariableEnum.DEAL_UNIT_ID.getKey()));
+                    taskService.setVariable(taskId,TaskVariableEnum.DEAL_TYPE.getKey(),dealType);
+                    taskService.setVariable(taskId,TaskVariableEnum.DEAL_REASON.getKey(),dealReason);
                 }
                 taskDo = runtimeInfoService.rejected(taskId,rejectElemKey,dealReason);
             } catch (Exception e) {
@@ -74,7 +76,7 @@ public class RuntimeController {
                 log.error("驳回处理异常：{}",e);
             }
         //通过
-        }else if ("0".equals(dealType)){
+        }else if (Objects.equals(DealTypeEnum.PASS.getValue(), dealType)){
             completeTasks(taskId, params);
         }
         return taskDo;
@@ -82,35 +84,36 @@ public class RuntimeController {
 
     private void completeTasks(@PathVariable String taskId, @RequestBody Map<String, Object> params) {
         log.info("完成任务参数：taskId={} ,params={}",taskId,params);
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("dealUserId",params.get("dealUserId"));
-        variables.put("dealUnitId",params.get("dealUnitId"));
+        Map<String, Object> variables = new HashMap<>(2);
+        variables.put(TaskVariableEnum.DEAL_USER_ID.getKey(),params.get(TaskVariableEnum.DEAL_USER_ID.getKey()));
+        variables.put(TaskVariableEnum.DEAL_UNIT_ID.getKey(),params.get(TaskVariableEnum.DEAL_UNIT_ID.getKey()));
         taskService.setVariablesLocal(taskId,variables);
-        variables = new HashMap<>();
-        variables.put("dealType",params.get("dealType"));
-        variables.put("dealReason",params.get("dealReason"));
+        variables = new HashMap<>(2);
+        variables.put(TaskVariableEnum.DEAL_TYPE.getKey(),params.get(TaskVariableEnum.DEAL_TYPE.getKey()));
+        variables.put(TaskVariableEnum.DEAL_REASON.getKey(),params.get(TaskVariableEnum.DEAL_REASON.getKey()));
         taskService.complete(taskId,variables);
         log.info("完成任务：任务ID："+taskId);
     }
 
     /**
      * 根据任务ID查询当前业务数据
-     *
-     * @param taskId
-     * @return
+     * @author beyond09.hik
+     * @date 10:21 2019/12/25
+     * @param taskId 任务ID
+     * @return java.lang.Object
      */
     @GetMapping(value = "/tasks/buss")
     public Object bussNow(@RequestParam("taskId") String taskId) {
-        Map<String, Object> variables = taskService.getVariables(taskId);
-        return variables;
+        return taskService.getVariables(taskId);
     }
 
 
     /**
      * 我的待办任务
-     *
-     * @param userId
-     * @return
+     * @author beyond09.hik
+     * @date 10:22 2019/12/25
+     * @param userId 用户ID
+     * @return java.lang.Object
      */
     @GetMapping(value = "/tasks/ing")
     public Object myTasks(@RequestParam("userId") String userId) {
@@ -124,7 +127,10 @@ public class RuntimeController {
             }
         }
         return list;
-        /*//节点指定的人
+
+        /// 测试关闭
+        /*
+        //节点指定的人
         List<RuTask> list = new ArrayList<>();
         List<Task> listTask = taskService.createTaskQuery()
                 .taskAssignee(userId)

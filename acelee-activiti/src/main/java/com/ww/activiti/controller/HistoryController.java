@@ -15,10 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 历史管理
- *
- * @Auther: Ace Lee
- * @Date: 2019/3/7 11:43
+ * @className HistoryController
+ * @description 历史管理
+ * @author beyond09.hik
+ * @date 9:42 2019/12/25
+ * @version 1.0
  */
 @RestController
 @RequestMapping("history")
@@ -31,9 +32,10 @@ public class HistoryController {
 
     /**
      * 我的审批记录
-     *
-     * @param userId
-     * @return
+     * @author beyond09.hik
+     * @date 9:42 2019/12/25
+     * @param userId 用户ID
+     * @return java.lang.Object
      */
     @GetMapping(value = "/tasks/myc")
     public Object myTasksCompleted(@RequestParam("userId") String userId) {
@@ -45,9 +47,10 @@ public class HistoryController {
 
     /**
      * 我发起的记录
-     *
-     * @param userId
-     * @return
+     * @author beyond09.hik
+     * @date 9:42 2019/12/25
+     * @param userId 用户ID
+     * @return java.lang.Object
      */
     @GetMapping(value = "/process/mys")
     public Object myProcessStarted(@RequestParam("userId") String userId) {

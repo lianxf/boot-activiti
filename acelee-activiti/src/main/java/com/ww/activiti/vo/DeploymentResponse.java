@@ -6,6 +6,13 @@ import org.activiti.rest.common.util.DateToStringSerializer;
 
 import java.util.Date;
 
+/**
+ * @className DeploymentResponse
+ * @description 发布流程响应结果封装
+ * @author beyond09.hik
+ * @date 10:38 2019/12/25
+ * @version 1.0
+ */
 public class DeploymentResponse {
 
   private String id;

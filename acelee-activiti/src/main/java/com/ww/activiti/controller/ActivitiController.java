@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 流程控制接口
- *
- * @Auther: Ace Lee
- * @Date: 2019/3/5 15:04
+ * @className ActivitiController
+ * @description 流程控制接口
+ * @author beyond09.hik
+ * @date 9:40 2019/12/25
+ * @version 1.0
  */
 @RestController
 @RequestMapping("prof")
@@ -30,9 +31,10 @@ public class ActivitiController implements RestServiceController<ProcessDefiniti
 
     /**
      * 启动一个流程
-     *
-     * @auther: Ace Lee
-     * @date: 2019/3/5 15:24
+     * @author beyond09.hik
+     * @date 9:41 2019/12/25
+     * @param key 流程key
+     * @return java.lang.Object
      */
     @GetMapping("start")
     public Object start(@RequestParam("key")String key) {
@@ -47,7 +49,8 @@ public class ActivitiController implements RestServiceController<ProcessDefiniti
     }
 
     @Override
-    public Object getList(@RequestParam(value = "rowSize", defaultValue = "1000", required = false) Integer rowSize, @RequestParam(value = "page", defaultValue = "1", required = false) Integer page) {
+    public Object getList(@RequestParam(value = "rowSize", defaultValue = "1000", required = false) Integer rowSize,
+                          @RequestParam(value = "page", defaultValue = "1", required = false) Integer page) {
         List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery()
                 .listPage(rowSize * (page - 1), rowSize);
         long count = repositoryService.createProcessDefinitionQuery().count();

@@ -1,10 +1,11 @@
 package com.ww.activiti.vo;
 
 /**
- * 模型
- *
- * @Auther: Ace Lee
- * @Date: 2019/3/6 11:17
+ * @className Modeler
+ * @description 模型
+ * @author beyond09.hik
+ * @date 10:39 2019/12/25
+ * @version 1.0
  */
 public class Modeler {
 

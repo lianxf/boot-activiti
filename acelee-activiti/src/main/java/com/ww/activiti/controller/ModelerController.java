@@ -28,10 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 模型管理
- *
- * @auther: Ace Lee
- * @date: 2019/3/7 20:14
+ * @className ModelerController
+ * @description 模型管理
+ * @author beyond09.hik
+ * @date 9:43 2019/12/25
+ * @version 1.0
  */
 @RestController
 @RequestMapping("models")
@@ -46,8 +47,10 @@ public class ModelerController implements RestServiceController<Model, String>{
 
     /**
      * 新建一个空模型
-     * @return
-     * @throws UnsupportedEncodingException
+     * @author beyond09.hik
+     * @date 9:43 2019/12/25
+     * @return java.lang.Object
+     * @throws UnsupportedEncodingException 编码不支持
      */
     @PostMapping("newModel")
     public Object newModel() throws UnsupportedEncodingException {
@@ -87,9 +90,10 @@ public class ModelerController implements RestServiceController<Model, String>{
 
     /**
      * 发布模型为流程定义
-     * @param id
-     * @return
-     * @throws Exception
+     * @author beyond09.hik
+     * @date 9:44 2019/12/25
+     * @param id 流程ID
+     * @return java.lang.Object
      */
     @PostMapping("{id}/deployment")
     public Object deploy(@PathVariable("id")String id) throws Exception {
@@ -121,6 +125,7 @@ public class ModelerController implements RestServiceController<Model, String>{
         modelData.setDeploymentId(deployment.getId());
         repositoryService.saveModel(modelData);
 
+        /// 测试关闭
         /*try {
             //创建流程文件
             ProcessDefinition processDefinition=repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).singleResult();
@@ -137,11 +142,10 @@ public class ModelerController implements RestServiceController<Model, String>{
     }
 
     /**
-     *
      * 获取所有模型
-     *
-     * @auther: Ace Lee
-     * @date: 2019/3/7 16:27
+     * @author beyond09.hik
+     * @date 9:44 2019/12/25
+     * @return com.ww.common.Result<java.util.List<java.util.Map<java.lang.String,java.lang.Object>>>
      */
     @GetMapping("models")
     public Result<List<Map<String,Object>>> list() {
@@ -170,6 +174,7 @@ public class ModelerController implements RestServiceController<Model, String>{
         );
     }
 
+    @Override
     public Object deleteOne(@PathVariable("id")String id){
         repositoryService.deleteModel(id);
         return ToWeb.buildResult().refresh();
